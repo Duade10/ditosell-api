@@ -10,7 +10,7 @@ from django.contrib.auth import authenticate
 
 # PASSWORD CHANGE VIEW
 from django.contrib.auth.tokens import default_token_generator
-from django.utils.http import urlsafe_base64_encode
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
@@ -61,13 +61,28 @@ class UserRegistrationView(CreateAPIView):
         if serializer.is_valid():
             with transaction.atomic():  # Rolls back data from database if error occurs
                 data = serializer.save()
+                data.is_active = False
                 data.set_password(data.password)
+                data.verify_email(request)
                 data.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def _send_mail(self, request, email):
-        pass
+
+class ConfirmMailView(APIView):
+    """Decodes the confirm account url and activates the account"""
+
+    def get(self, request, uidb64, token, *args, **kwargs):
+        try:
+            uid = urlsafe_base64_decode(uidb64).decode()
+            user = models.User._default_manager.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, models.User.DoesNotExist):
+            user = None
+
+        if user is not None and default_token_generator.check_token(user, token):
+            user.is_active = True
+            user.save()
+        return Response({"detail": "Email Registration Successful"}, status=status.HTTP_200_OK)
 
 
 class UserProfileView(RetrieveUpdateDestroyAPIView):
