@@ -134,3 +134,11 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.TokenAuthentication",
     ],
 }
+
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"  # Replace with your SMTP server hostname or IP address
+EMAIL_PORT = 465  # Typically, 587 is used for TLS, and 465 for SSL
+EMAIL_USE_SSL = True  # Use SSL for secure connection, set to True if needed
+EMAIL_HOST_USER = "ditoselloperations@gmail.com"  # Replace with your SMTP username or email
+EMAIL_HOST_PASSWORD = "exdwaezzcjqrmfva"

@@ -39,7 +39,7 @@ class User(AbstractUser):
     )
 
     email = models.EmailField(unique=True)
-    username = models.CharField(max_length=150, unique=True, blank=True, null=True)
+    username = models.CharField(max_length=150, unique=False, blank=True, null=True)
     first_name = models.CharField(max_length=30, blank=True, null=True)
     last_name = models.CharField(max_length=30, blank=True, null=True)
     date_joined = models.DateTimeField(auto_now_add=True)
@@ -51,6 +51,8 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []
 
     def save(self, *args, **kwargs):
+        if self.email:
+            self.username = self.email.split("@")[0]
         if self.first_name:
             self.first_name = str.capitalize(self.first_name)
         if self.last_name:
@@ -62,9 +64,9 @@ class User(AbstractUser):
         domain = current_site
         uid = urlsafe_base64_encode(force_bytes(self.pk))
         token = default_token_generator.make_token(self)
-        activate_url = f"{domain}/{token}/{uid}"
+        activate_url = f"http://{domain}/api/users/activate/{token}/{uid}"
 
-        html_message = render_to_string("email/verification_email.html", {"activate_url": activate_url})
+        html_message = render_to_string("registration_email.html", {"activate_url": activate_url})
 
         send_mail(
             "Confirm Your Email Address for Access to Our Logistics Services",
