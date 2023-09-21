@@ -62,16 +62,15 @@ class UserLoginView(APIView):
 class UserLogoutView(APIView):
     """Invalidates the user authorization token"""
 
-    authentication_classes = [models.MongoDBAuthentication]
-    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [CustomTokenAuthentication]
+    permission_classes = [CustomPermission]
 
     def post(self, request):
-        user = request.user
+        user, _ = self.authentication_classes[0]().authenticate(request)
 
         if user:
-            token_blacklist = db["token_blacklist"]
-            token_blacklist.insert_one({"token": request.auth})
-
+            tokens = db["token"]
+            tokens.update_one({"user_id": user["id"]}, {"$set": {"is_valid": False}})
             return Response({"detail": "Successfully Logged Out"}, status=status.HTTP_200_OK)
         else:
             return Response({"detail": "Invalid User"}, status=status.HTTP_401_UNAUTHORIZED)
