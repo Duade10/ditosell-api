@@ -1,6 +1,6 @@
 from pathlib import Path
 from decouple import Csv, config
-
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,6 +20,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+
 DJANGO_APPS = [
     "jazzmin",
     "django.contrib.admin",
@@ -30,7 +31,8 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
 ]
 
-CUSTOM_APPS = ["users.apps.UsersConfig"]
+
+CUSTOM_APPS = ["users"]
 
 THRIDPARTY_APPS = [
     "rest_framework",
@@ -76,22 +78,22 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "djongo",
-        "NAME": config("DATABASE_NAME"),
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
-if not DEBUG:
-    pass
 
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-    },
+    # {
+    #     "NAME": "custom_validators.validators.UppercaseValidator",
+    # },
+    # {
+    #     "NAME": "custom_validators.validators.CustomSimilarityValidator",
+    # },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
@@ -102,8 +104,6 @@ AUTH_PASSWORD_VALIDATORS = [
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
-
-AUTH_USER_MODEL = "users.User"
 
 
 # Internationalization
@@ -130,15 +130,22 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework.authentication.TokenAuthentication",
-    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
 }
 
+SIMPLE_JWT = {
+    "TOKEN_OBTAIN_SERIALIZER": "users.serializers.MyTokenObtainPairSerializer",
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
+    "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
+    "SLIDING_TOKEN_LIFETIME": timedelta(days=14),
+    "SLIDING_TOKEN_REFRESH_LIMIT": timedelta(days=30),
+}
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST = config("EMAIL_HOST")  # Replace with your SMTP server hostname or IP address
-EMAIL_PORT = config("EMAIL_POST")  # Typically, 587 is used for TLS, and 465 for SSL
-EMAIL_USE_SSL = config("EMAIL_USE_SSL")  # Use SSL for secure connection, set to True if needed
-EMAIL_HOST_USER = config("EMAIL_USER")  # Replace with your SMTP username or email
+EMAIL_HOST = config("EMAIL_HOST")
+EMAIL_PORT = config("EMAIL_PORT")
+EMAIL_USE_SSL = config("EMAIL_USE_SSL")
+EMAIL_HOST_USER = config("EMAIL_USER")
 EMAIL_HOST_PASSWORD = config("EMAIL_PASSWORD")
+
+GOOGLE_OAUTH2_CLIENT_SECRETS_JSON = BASE_DIR / config("GOOGLE_SECRET_JSON")

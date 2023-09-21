@@ -12,6 +12,13 @@ django-cors-headers = "*"
 djongo = "*"
 pymongo = "==3.12.3"
 django-jazzmin = "*"
+requests = "*"
+social-auth-app-django = "*"
+bcrypt = "*"
+djangorestframework-jwt = "*"
+djangorestframework-simplejwt = "*"
+google-auth-oauthlib = "*"
+google-auth-httplib2 = "*"
 
 [dev-packages]
 black = "*"

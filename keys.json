@@ -1,0 +1,14 @@
+{
+    "web": {
+        "client_id": "602502256399-1i4its609646k2e4qr0lue59e4m7jcpn.apps.googleusercontent.com",
+        "project_id": "ditosell-web-api",
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "token_uri": "https://oauth2.googleapis.com/token",
+        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+        "client_secret": "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",
+        "redirect_uris": [
+            "http://127.0.0.1:8000",
+            "http://127.0.0.1:8000/api/users/google/login/callback/"
+        ]
+    }
+}
