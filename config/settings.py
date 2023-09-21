@@ -32,7 +32,12 @@ DJANGO_APPS = [
 ]
 
 
-CUSTOM_APPS = ["users"]
+CUSTOM_APPS = [
+    "users.apps.UsersConfig",
+    "orders.apps.OrdersConfig",
+    "senders.apps.SendersConfig",
+    "shipments.apps.ShipmentsConfig",
+]
 
 THRIDPARTY_APPS = [
     "rest_framework",
