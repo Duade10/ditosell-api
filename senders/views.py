@@ -1,7 +1,8 @@
-from rest_framework.views import APIView
+from django.utils import timezone
+from rest_framework import status
 from rest_framework.generics import RetrieveUpdateDestroyAPIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework.views import APIView
 
 from users.authentications import CustomTokenAuthentication
 from users.permissions import CustomPermission
@@ -57,6 +58,7 @@ class SenderDetailView(RetrieveUpdateDestroyAPIView):
                 return Response({"error": "You do not have the permission"}, status=status.HTTP_401_UNAUTHORIZED)
 
             sender = sender_db.update_sender(id, serializer.validated_data)
+            sender = sender_db.update_sender(id, {"updated_at": str(timezone.now())})
             data = {"data": sender, "message": "Sender Updated Successfully"}
             return Response(data, status=status.HTTP_200_OK)
 
@@ -73,6 +75,6 @@ class SenderDetailView(RetrieveUpdateDestroyAPIView):
         if sender["user_id"] != user["id"]:
             return Response({"error": "You do not have the permission"}, status=status.HTTP_401_UNAUTHORIZED)
 
-        sender = sender_db.update_sender(id, {"is_active": False})
+        sender = sender_db.update_sender(id, {"is_active": False, "updated_at": str(timezone.now())})
         data = {"data": sender, "message": "Sender set as inactive"}
         return Response(data, status=status.HTTP_200_OK)

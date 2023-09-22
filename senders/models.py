@@ -35,7 +35,7 @@ class Sender:
             self.region = None
             self.user_id = None
 
-    def get_sender(self, string_value=None, value=None):
+    def get_sender(self, string_value=None, value=None) -> dict:
         if string_value:
             query = {string_value: value}
 
@@ -55,7 +55,9 @@ class Sender:
             }
         return None
 
-    def add_sender(self):
+    def add_sender(self) -> dict:
+        """Takes Instiantiated Sender Dict as input and creates a Sender Object in the database"""
+
         custom_id = str(uuid.uuid4())
         new_sender = {
             "id": custom_id,
@@ -72,7 +74,7 @@ class Sender:
         new_sender = self.get_sender("id", new_sender.get("id"))
         return new_sender
 
-    def update_sender(self, sender_id, sender_dict):
+    def update_sender(self, sender_id, sender_dict) -> dict:
         """Takes Sender ID and QuerySet Object And Return Sender Object"""
 
         self.senders.update_one({"id": sender_id}, {"$set": sender_dict})
