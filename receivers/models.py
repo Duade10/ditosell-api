@@ -24,12 +24,11 @@ class Receiver:
             self.phone_number = receiver_dict["phone_number"]
             self.pickup_address = receiver_dict["pickup_address"]
             self.region = receiver_dict["region"]
+            self.sender_id = receiver_dict["sender_id"]
             try:
                 self.user_id = receiver_dict["user_id"]
-                self.sender_id = receiver_dict["sender_id"]
             except (AttributeError, KeyError):
                 self.user_id = None
-                self.sender_id = None
 
         else:
             self.full_name = None
@@ -39,7 +38,7 @@ class Receiver:
             self.user_id = None
             self.sender_id = None
 
-    def get_receiver(self, string_value=None, value=None) ->:
+    def get_receiver(self, string_value=None, value=None) -> dict:
         if string_value:
             query = {string_value: value}
 
@@ -47,6 +46,7 @@ class Receiver:
 
         if receiver:
             return {
+                "id": receiver["id"],
                 "full_name": receiver["full_name"],
                 "phone_number": receiver["phone_number"],
                 "pickup_address": receiver["pickup_address"],

@@ -21,4 +21,5 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/users/", include("users.urls", namespace="users")),
     path("api/senders/", include("senders.urls", namespace="senders")),
+    path("api/receivers/", include("receivers.urls", namespace="receivers")),
 ]
