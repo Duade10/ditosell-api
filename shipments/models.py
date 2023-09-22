@@ -55,7 +55,7 @@ class Shipment:
             }
         return None
 
-    def add_shipments(self) -> dict:
+    def add_shipment(self) -> dict:
         """From the Shipment Dictionary supplied into the class Argument, it creates a new Shipment object."""
 
         custom_id = str(uuid.uuid4())
