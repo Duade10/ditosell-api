@@ -3,7 +3,6 @@ from django.conf import settings
 from rest_framework import authentication
 from rest_framework.exceptions import AuthenticationFailed
 
-
 from db_connection import db
 
 
@@ -16,8 +15,12 @@ class CustomTokenAuthentication(authentication.BaseAuthentication):
 
         try:
             payload = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-            user_id = payload.get("uuid")
-            user = self.get_user_from_mongodb(user_id)
+            uuid = payload.get("uuid")
+            tokens = db["token"]
+            token = tokens.find_one({"uuid": uuid})
+            user = self.get_user_from_mongodb(token["user_id"])
+            if user is None:
+                raise AuthenticationFailed("User not found")
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed("Token has expired")
         except jwt.DecodeError:
@@ -33,5 +36,5 @@ class CustomTokenAuthentication(authentication.BaseAuthentication):
 
     def get_user_from_mongodb(self, user_id):
         users = db["users"]
-        user = users.find_one({"uuid": user_id})
+        user = users.find_one({"id": user_id})
         return user
