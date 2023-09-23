@@ -1,6 +1,8 @@
-from pathlib import Path
-from decouple import Csv, config
 from datetime import timedelta
+from pathlib import Path
+
+import cloudinary
+from decouple import Csv, config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -154,3 +156,9 @@ EMAIL_HOST_USER = config("EMAIL_USER")
 EMAIL_HOST_PASSWORD = config("EMAIL_PASSWORD")
 
 GOOGLE_OAUTH2_CLIENT_SECRETS_JSON = BASE_DIR / config("GOOGLE_SECRET_JSON")
+
+cloudinary.config(
+    cloud_name=config("CLOUD_NAME"),
+    api_key=config("API_KEY"),
+    api_secret=config("API_SECRET"),
+)

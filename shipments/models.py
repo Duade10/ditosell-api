@@ -1,14 +1,27 @@
 import uuid
 
+import cloudinary
+from cloudinary.uploader import upload
+from decouple import Csv, config
 from django.utils import timezone
 
 from db_connection import db
+
+cloudinary.config(
+    cloud_name=config("CLOUD_NAME"),
+    api_key=config("API_KEY"),
+    api_secret=config("API_SECRET"),
+)
+
+path = r"C:\Users\USER\Downloads\1.jpg"
+
+response = upload(path, public_id="1")
 
 
 class Shipment:
     """Shipment Model Class"""
 
-    def __init__(self, shipment_dict):
+    def __init__(self, shipment_dict=None):
         self.shipments = db["shipments"]
 
         if shipment_dict:
@@ -19,7 +32,10 @@ class Shipment:
             self.sender_id = shipment_dict["sender_id"]
             self.receiver_id = shipment_dict["receiver_id"]
             try:
-                self.image = shipment_dict["image"]
+                path = shipment_dict["image"]
+                public_id = f"{self.category}|{self.item}|{str(timezone.now())}"
+                response = upload(path, public_id=public_id)
+                self.image = response.get("secure_url")
             except (AttributeError, KeyError):
                 self.image = None
             try:
@@ -47,11 +63,18 @@ class Shipment:
 
         if shipment:
             return {
+                "id": shipment["id"],
                 "category": shipment["category"],
                 "item": shipment["item"],
                 "weight": shipment["weight"],
                 "quantity": shipment["quantity"],
                 "image": shipment["image"],
+                "sender_id": shipment["sender_id"],
+                "receiver_id": shipment["receiver_id"],
+                "user_id": shipment["user_id"],
+                "created_at": shipment["created_at"],
+                "updated_at": shipment["updated_at"],
+                "is_active": True,
             }
         return None
 

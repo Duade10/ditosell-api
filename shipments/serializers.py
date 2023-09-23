@@ -4,9 +4,9 @@ from . import models
 
 
 class ShipmentSerializer(serializers.Serializer):
-    id = serializers.CharField(max_length=40, required=True)
+    id = serializers.CharField(max_length=40, required=False, read_only=True)
     category = serializers.CharField(max_length=50, required=True)
-    item = serializers.CharField(max_legth=100, required=True)
+    item = serializers.CharField(max_length=100, required=True)
     weight = serializers.FloatField(required=True)
     quantity = serializers.IntegerField(required=True)
     image = serializers.ImageField(required=False)

@@ -19,6 +19,7 @@ djangorestframework-jwt = "*"
 djangorestframework-simplejwt = "*"
 google-auth-oauthlib = "*"
 google-auth-httplib2 = "*"
+cloudinary = "*"
 
 [dev-packages]
 black = "*"
