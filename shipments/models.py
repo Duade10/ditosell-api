@@ -74,7 +74,7 @@ class Shipment:
                 "user_id": shipment["user_id"],
                 "created_at": shipment["created_at"],
                 "updated_at": shipment["updated_at"],
-                "is_active": True,
+                "is_active": shipment["is_active"],
             }
         return None
 
