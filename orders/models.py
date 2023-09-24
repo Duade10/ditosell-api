@@ -11,11 +11,20 @@ class Order:
     def __init__(self, order_dict=None):
         self.orders = db["orders"]
 
-        def check_field(string_value):
+        def check_field(string_value) -> dict or None:
+            """
+            Check if a field exists in the order_dict dictionary and return its value.
+
+            :param string_value: The name of the field to check.
+            :return: The value of the field if it exists, or None if it doesn't.
+            """
+
             try:
                 obj = order_dict[string_value]
+
                 return obj
             except (AttributeError, KeyError):
+                # If the field doesn't exist or an error occurs, return None
                 return None
 
         if order_dict:
@@ -41,7 +50,14 @@ class Order:
             self.progress = None
             self.is_active = None
 
-    def get_order(self, string_value=None, value=None) -> dict:
+    def get_order(self, string_value=None, value=None) -> dict or None:
+        """
+        Retrieves a orders object from the database based on the specified attribute and its value.
+
+        :param string_value: The name of the attribute to search by (e.g., "id").
+        :param value: The value to match when searching for the orders object.
+        :return: A dictionary containing the orders object's attributes (or None if not found).
+        """
         if string_value:
             query = {string_value: value}
 
@@ -55,15 +71,20 @@ class Order:
                 "receiver_id": order["receiver_id"],
                 "shipment_id": order["shipment_id"],
                 "user_id": order["user_id"],
-                "created_at": order["created_at"],
-                "updated_at": order["updated_at"],
                 "progress": order["progress"],
                 "is_active": order["is_active"],
+                "created_at": order["created_at"],
+                "updated_at": order["updated_at"],
             }
 
         return None
 
     def add_order(self) -> dict:
+        """
+        Adds a new orders object to the database.
+
+        :return: The newly created orders object.
+        """
         custom_id = str(uuid.uuid4())
 
         new_order = {
@@ -84,8 +105,13 @@ class Order:
         return new_order
 
     def update_order(self, order_id, order_dict) -> dict:
-        """Takes order ID and QuerySet Dict And Return order Object"""
+        """
+        Updates a orders object with the specified ID using the provided order_dict.
 
+        :param order_id: The ID of the orders object to be updated.
+        :param order_dict: A dictionary containing the values to be updated.
+        :return: The updated orders object.
+        """
         self.orders.update_one({"id": order_id}, {"$set": order_dict})
         order = self.get_order("id", order_id)
         return order

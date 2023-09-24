@@ -13,16 +13,28 @@ cloudinary.config(
     api_secret=config("API_SECRET"),
 )
 
-path = r"C:\Users\USER\Downloads\1.jpg"
-
-response = upload(path, public_id="1")
-
 
 class Shipment:
     """Shipment Model Class"""
 
     def __init__(self, shipment_dict=None):
         self.shipments = db["shipments"]
+
+        def check_field(string_value) -> dict or None:
+            """
+            Check if a field exists in the shipment_dict dictionary and return its value.
+
+            :param string_value: The name of the field to check.
+            :return: The value of the field if it exists, or None if it doesn't.
+            """
+
+            try:
+                obj = shipment_dict[string_value]
+
+                return obj
+            except (AttributeError, KeyError):
+                # If the field doesn't exist or an error occurs, return None
+                return None
 
         if shipment_dict:
             self.category = shipment_dict["category"]
@@ -53,14 +65,20 @@ class Shipment:
             self.sender_id = None
             self.receiver_id = None
 
-    def get_shipment(self, string_value=None, value=None) -> dict:
-        """Takes the name of the field and a value of the shipment object and return the object"""
+    def get_shipment(self, string_value=None, value=None) -> dict or None:
+        """
+        Retrieves a shipments object from the database based on the specified attribute and its value.
 
+        :param string_value: The name of the attribute to search by (e.g., "id").
+        :param value: The value to match when searching for the shipments object.
+        :return: A dictionary containing the shipments object's attributes (or None if not found).
+        """
         if string_value:
             query = {string_value: value}
 
         shipment = self.shipments.find_one(query)
 
+        # If a shipment object is found, return a dictionary with selected attributes
         if shipment:
             return {
                 "id": shipment["id"],
@@ -76,11 +94,16 @@ class Shipment:
                 "updated_at": shipment["updated_at"],
                 "is_active": shipment["is_active"],
             }
+
+        # If no shipments object is found, return None
         return None
 
     def add_shipment(self) -> dict:
-        """From the Shipment Dictionary supplied into the class Argument, it creates a new Shipment object."""
+        """
+        Adds a new shipments object to the database.
 
+        :return: The newly created shipments object.
+        """
         custom_id = str(uuid.uuid4())
 
         new_shipment = {
@@ -104,8 +127,13 @@ class Shipment:
         return new_shipment
 
     def update_shipment(self, shipment_id, shipment_dict) -> dict:
-        """Takes the id of the shipment object and the shipment dict of the values to be updated"""
+        """
+        Updates a shipments object with the specified ID using the provided shipment_dict.
 
+        :param shipment_id: The ID of the shipments object to be updated.
+        :param shipment_dict: A dictionary containing the values to be updated.
+        :return: The updated shipments object.
+        """
         self.shipments.update_one({"id": shipment_id}, {"$set": shipment_dict})
         shipment = self.get_shipment("id", shipment_id)
 

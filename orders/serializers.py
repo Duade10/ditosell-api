@@ -12,6 +12,9 @@ from . import models
 
 class OrderSerializer(serializers.Serializer):
     id = serializers.CharField(max_length=40, required=False)
+    user_id = serializers.CharField(max_length=40, required=False)
+    progress = serializers.CharField(required=False)
+    is_active = serializers.BooleanField(default=True)
     logistics = serializers.CharField(max_length=40, required=True)
     sender_id = serializers.CharField(max_length=40, write_only=True, required=True)
     sender = serializers.SerializerMethodField()
@@ -19,11 +22,8 @@ class OrderSerializer(serializers.Serializer):
     receiver = serializers.SerializerMethodField()
     shipment_id = serializers.CharField(max_length=40, write_only=True, required=True)
     shipment = serializers.SerializerMethodField()
-    user_id = serializers.CharField(max_length=40, required=False)
     created_at = serializers.DateTimeField(read_only=True)
     updated_at = serializers.DateTimeField(read_only=True)
-    progress = serializers.CharField(required=False)
-    is_active = serializers.BooleanField(default=True)
 
     def create(self, validated_data):
         order = models.Order(order_dict=validated_data)

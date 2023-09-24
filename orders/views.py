@@ -25,7 +25,6 @@ class OrderCreateView(APIView):
             order_db = models.Order()
 
             data = order_db.update_order(data["id"], {"user_id": user["id"]})
-            print(data)
             serializer = serializers.OrderSerializer(data=data)
             if serializer.is_valid():
                 data = {"data": serializer.data, "message": "Order Created Successfully"}
@@ -47,7 +46,10 @@ class OrderDetailView(RetrieveUpdateDestroyAPIView):
         data = order_db.get_order("id", id)
         if data["user_id"] != user["id"]:
             return Response({"error": "You do not have the permission"}, status=status.HTTP_401_UNAUTHORIZED)
-        return Response(data, status=status.HTTP_200_OK)
+        serializer = serializers.OrderSerializer(data=data)
+        if serializer.is_valid(raise_exception=True):
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_200_OK)
 
     def update(self, request, id, *args, **kwargs):
         user, _ = self.authentication_classes[0]().authenticate(request)
