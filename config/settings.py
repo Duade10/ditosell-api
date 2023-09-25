@@ -39,6 +39,7 @@ CUSTOM_APPS = [
     "orders.apps.OrdersConfig",
     "senders.apps.SendersConfig",
     "shipments.apps.ShipmentsConfig",
+    "logistics.apps.LogisticsConfig",
 ]
 
 THRIDPARTY_APPS = [

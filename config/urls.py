@@ -8,4 +8,5 @@ urlpatterns = [
     path("api/senders/", include("senders.urls", namespace="senders")),
     path("api/receivers/", include("receivers.urls", namespace="receivers")),
     path("api/shipments/", include("shipments.urls", namespace="shipments")),
+    path("api/logistics/", include("logistics.urls", namespace="logistics")),
 ]

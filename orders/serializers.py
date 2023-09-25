@@ -6,6 +6,8 @@ from senders.models import Sender
 from senders.serializers import SenderSerializer
 from shipments.models import Shipment
 from shipments.serializers import ShipmentSerializer
+from logistics.models import Logistic
+from logistics.serializers import LogisticSerializer
 
 from . import models
 
@@ -13,9 +15,11 @@ from . import models
 class OrderSerializer(serializers.Serializer):
     id = serializers.CharField(max_length=40, required=False)
     user_id = serializers.CharField(max_length=40, required=False)
+    price = serializers.FloatField(required=False)
     progress = serializers.CharField(required=False)
     is_active = serializers.BooleanField(default=True)
-    logistics = serializers.CharField(max_length=40, required=True)
+    logistic_id = serializers.CharField(max_length=40, write_only=True, required=True)
+    logistic = serializers.SerializerMethodField()
     sender_id = serializers.CharField(max_length=40, write_only=True, required=True)
     sender = serializers.SerializerMethodField()
     receiver_id = serializers.CharField(max_length=40, write_only=True, required=True)
@@ -29,6 +33,13 @@ class OrderSerializer(serializers.Serializer):
         order = models.Order(order_dict=validated_data)
         new_order = order.add_order()
         return new_order
+
+    def get_logistic(self, obj):
+        logistic_id = obj.get("logistic_id")
+        logistic_db = Logistic()
+        logistic_data = logistic_db.get_logistic("id", logistic_id)
+        serializer = LogisticSerializer(logistic_data)
+        return serializer.data
 
     def get_sender(self, obj):
         sender_id = obj.get("sender_id")

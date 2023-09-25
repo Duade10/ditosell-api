@@ -1,59 +1,40 @@
 import json
 import uuid
+from datetime import datetime, timedelta
 
 import bcrypt
 import jwt
 import requests
 from django.conf import settings
-
-# PASSWORD CHANGE VIEW
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
+from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.template.loader import render_to_string
 from django.utils import timezone
 from google_auth_oauthlib.flow import Flow
-from rest_framework import permissions, status
+from rest_framework import authentication, permissions, status
 from rest_framework.generics import CreateAPIView, RetrieveUpdateDestroyAPIView, UpdateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.http import HttpResponse
 
 from db_connection import db
-
 from . import models, serializers
-from .authentications import CustomTokenAuthentication
+from .authentications import CustomTokenAuthentication, generate_token
 from .permissions import CustomPermission
 
 
-def generate_token(user_id) -> dict:
-    tokens = db["token"]
-    payload = {"uuid": str(uuid.uuid4())}
-    key = jwt.encode(payload, settings.SECRET_KEY, algorithm="HS256")
-    old_token = tokens.find_one({"user_id": user_id})
-    if old_token:
-        tokens.update_one({"_id": old_token["_id"]}, {"$set": {"is_valid": False}})
-    token = {"key": key, "uuid": payload["uuid"], "is_valid": True, "user_id": user_id}
-    tokens.insert_one(token)
-    return token
-
-
 class UserLoginView(APIView):
-    """The UserLoginView returns an authorization token when a user logs in"""
-
     authentication_classes = [models.MongoDBAuthentication]
     permission_classes = []
 
     def post(self, request):
-        users = db["users"]
-
         user, _ = self.authentication_classes[0]().authenticate(request)
 
         if user:
             token = generate_token(user["id"])
-            user["last_login"] = timezone.now()
-            users.update_one({"id": user["id"]}, {"$set": {"last_login": user["last_login"]}})
-
+            user_model = models.User()
+            user_model.update_last_login(user)
             return Response({"token": token["key"], "message": "Login Successful"}, status=status.HTTP_200_OK)
 
         return Response({"detail": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)

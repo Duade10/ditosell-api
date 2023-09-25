@@ -29,7 +29,7 @@ class Order:
 
         if order_dict:
             self.id = check_field("id")
-            self.logistics = check_field("logistics")
+            self.logistic_id = check_field("logistic_id")
             self.sender_id = check_field("sender_id")
             self.receiver_id = check_field("receiver_id")
             self.shipment_id = check_field("shipment_id")
@@ -37,10 +37,11 @@ class Order:
             self.created_at = check_field("created_at")
             self.updated_at = check_field("updated_at")
             self.progress = check_field("progress")
+            self.price = check_field("price")
             self.is_active = check_field("is_active")
         else:
             self.id = None
-            self.logistics = None
+            self.logistic_id = None
             self.sender_id = None
             self.receiver_id = None
             self.shipment_id = None
@@ -48,6 +49,7 @@ class Order:
             self.created_at = None
             self.updated_at = None
             self.progress = None
+            self.price = None
             self.is_active = None
 
     def get_order(self, string_value=None, value=None) -> dict or None:
@@ -66,11 +68,12 @@ class Order:
         if order:
             return {
                 "id": order["id"],
-                "logistics": order["logistics"],
+                "logistic_id": order["logistic_id"],
                 "sender_id": order["sender_id"],
                 "receiver_id": order["receiver_id"],
                 "shipment_id": order["shipment_id"],
                 "user_id": order["user_id"],
+                "price": order["price"],
                 "progress": order["progress"],
                 "is_active": order["is_active"],
                 "created_at": order["created_at"],
@@ -89,7 +92,8 @@ class Order:
 
         new_order = {
             "id": custom_id,
-            "logistics": self.logistics,
+            "price": self.price,
+            "logistic_id": self.logistic_id,
             "sender_id": self.sender_id,
             "receiver_id": self.receiver_id,
             "user_id": self.user_id,
